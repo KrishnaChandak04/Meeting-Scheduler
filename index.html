@@ -1,0 +1,1132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MeetUp - Where Teams Connect Naturally</title>
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            /* Warm, human color palette */
+            --primary-color: #6366f1;
+            --primary-light: #a5b4fc;
+            --primary-dark: #4338ca;
+            --accent-color: #f59e0b;
+            --accent-light: #fde68a;
+            --success-color: #10b981;
+            --success-light: #d1fae5;
+            --warning-color: #f59e0b;
+            --warning-light: #fef3c7;
+            --error-color: #ef4444;
+            --error-light: #fee2e2;
+            
+            /* Natural backgrounds */
+            --background-color: #fefefe;
+            --background-warm: #fffbf7;
+            --surface-color: #ffffff;
+            --surface-warm: #fefcf9;
+            --surface-muted: #f8f9fa;
+            
+            /* Soft borders and text */
+            --border-color: #e5e7eb;
+            --border-light: #f3f4f6;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --text-muted: #9ca3af;
+            
+            /* Gentle shadows */
+            --shadow-soft: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            --shadow-gentle: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-warm: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            
+            /* Organic border radius */
+            --radius-sm: 6px;
+            --radius-md: 12px;
+            --radius-lg: 18px;
+            --radius-xl: 24px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, var(--background-warm) 0%, var(--background-color) 100%);
+            color: var(--text-primary);
+            line-height: 1.7;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1.5rem;
+        }
+
+        /* Hero Section - More human and welcoming */
+        .hero {
+            text-align: center;
+            margin-bottom: 3rem;
+            background: linear-gradient(135deg, var(--surface-warm), var(--surface-color));
+            padding: 4rem 2rem 3rem;
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-warm);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(99, 102, 241, 0.05), transparent);
+            animation: float 20s ease-in-out infinite;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 3.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.2;
+        }
+
+        .hero .subtitle {
+            font-size: 1.3rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto 2rem;
+            font-weight: 400;
+        }
+
+        .hero-badges {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+        }
+
+        .hero-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--surface-color);
+            padding: 0.75rem 1.25rem;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-soft);
+            border: 1px solid var(--border-light);
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .hero-badge i {
+            color: var(--success-color);
+        }
+
+        /* Connection Status - More friendly */
+        .status-section {
+            background: var(--surface-color);
+            padding: 1.5rem;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-soft);
+            margin-bottom: 2rem;
+            border: 1px solid var(--border-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .connection-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .connection-status {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .status-indicator {
+            position: relative;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--success-color);
+            animation: breathe 3s ease-in-out infinite;
+        }
+
+        .status-indicator::after {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: -4px;
+            right: -4px;
+            bottom: -4px;
+            border: 2px solid var(--success-color);
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: ripple 2s infinite;
+        }
+
+        .user-greeting {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        /* Cards with organic feel */
+        .sections-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: var(--surface-color);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-gentle);
+            border: 1px solid var(--border-light);
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: var(--shadow-warm);
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        .card-header {
+            padding: 2rem 2rem 1rem;
+            background: linear-gradient(135deg, var(--surface-warm), var(--surface-color));
+        }
+
+        .card-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-title i {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--primary-light);
+            color: var(--primary-dark);
+            border-radius: var(--radius-sm);
+            font-size: 0.9rem;
+        }
+
+        .card-description {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .card-body {
+            padding: 1rem 2rem 2rem;
+        }
+
+        /* Form styling - more friendly and approachable */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.75rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 1rem 1.25rem;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-size: 0.95rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: var(--surface-color);
+            font-family: inherit;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+            transform: scale(1.01);
+        }
+
+        .form-input::placeholder {
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        /* Buttons with personality */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-decoration: none;
+            font-family: inherit;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            box-shadow: var(--shadow-gentle);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-warm);
+        }
+
+        .btn-secondary {
+            background: var(--surface-color);
+            color: var(--text-primary);
+            border: 2px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: var(--surface-warm);
+            border-color: var(--primary-color);
+            transform: translateY(-1px);
+        }
+
+        /* Quick actions with natural spacing */
+        .quick-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        /* Meetings list with organic layout */
+        .meeting-item {
+            background: var(--surface-warm);
+            padding: 1.5rem;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-light);
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .meeting-item:hover {
+            transform: translateX(4px);
+            background: var(--surface-color);
+            box-shadow: var(--shadow-gentle);
+        }
+
+        .meeting-time {
+            font-weight: 600;
+            color: var(--primary-color);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .meeting-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0.5rem 0;
+        }
+
+        .meeting-description {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .meeting-category {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background: var(--accent-light);
+            color: var(--accent-color);
+            border-radius: var(--radius-lg);
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-top: 0.75rem;
+        }
+
+        /* Analytics with human-friendly data viz */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--surface-color);
+            padding: 1.5rem;
+            border-radius: var(--radius-md);
+            text-align: center;
+            border: 1px solid var(--border-light);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: scale(1.05);
+            box-shadow: var(--shadow-gentle);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            display: block;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Notifications with warmth */
+        .notification {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 1rem 1.5rem;
+            box-shadow: var(--shadow-warm);
+            max-width: 400px;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+        }
+
+        .notification.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .notification-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .notification-message {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .notification-time {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Animations with natural feel */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(2deg); }
+        }
+
+        @keyframes breathe {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        @keyframes ripple {
+            0% { transform: scale(1); opacity: 0.3; }
+            100% { transform: scale(2); opacity: 0; }
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-in {
+            animation: slideIn 0.6s ease-out forwards;
+        }
+
+        /* Responsive design with human considerations */
+        @media (max-width: 768px) {
+            .container { padding: 1rem; }
+            .hero h1 { font-size: 2.5rem; }
+            .hero .subtitle { font-size: 1.1rem; }
+            .sections-grid { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .hero-badges { flex-direction: column; align-items: center; }
+            .status-section { flex-direction: column; text-align: center; }
+        }
+
+        @media (max-width: 480px) {
+            .hero h1 { font-size: 2rem; }
+            .stats-grid { grid-template-columns: 1fr; }
+            .quick-actions { flex-direction: column; width: 100%; }
+            .btn { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Hero Section -->
+        <div class="hero">
+            <div class="hero-content">
+                <h1>MeetUp</h1>
+                <p class="subtitle">Where teams connect naturally and meetings flow effortlessly</p>
+                <div class="hero-badges">
+                    <div class="hero-badge">
+                        <i class="fas fa-heart"></i>
+                        <span>Made with care</span>
+                    </div>
+                    <div class="hero-badge">
+                        <i class="fas fa-users"></i>
+                        <span>Built for humans</span>
+                    </div>
+                    <div class="hero-badge">
+                        <i class="fas fa-clock"></i>
+                        <span>Respects your time</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Connection Status -->
+        <div class="status-section">
+            <div class="connection-info">
+                <div class="connection-status" id="connectionStatus">
+                    <div class="status-indicator"></div>
+                    <span>Connected & ready</span>
+                </div>
+                <div class="user-greeting">
+                    Good to see you! Let's make meetings meaningful.
+                </div>
+            </div>
+            <div class="quick-actions">
+                <button class="btn btn-primary" onclick="showQuickMeeting()">
+                    <i class="fas fa-plus"></i>
+                    Quick Meeting
+                </button>
+                <button class="btn btn-secondary" onclick="loadCalendar()">
+                    <i class="fas fa-calendar"></i>
+                    View Calendar
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Content Grid -->
+        <div class="sections-grid">
+            <!-- Schedule a Meeting -->
+            <div class="card animate-in">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <i class="fas fa-calendar-plus"></i>
+                        Schedule a Meeting
+                    </h2>
+                    <p class="card-description">Bring your team together for meaningful conversations</p>
+                </div>
+                <div class="card-body">
+                    <form id="meetingForm">
+                        <div class="form-group">
+                            <label class="form-label" for="meetingTitle">What would you like to discuss?</label>
+                            <input type="text" id="meetingTitle" class="form-input" 
+                                   placeholder="e.g., Weekly team sync or Coffee chat with Sarah" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="meetingDescription">Share more details (optional)</label>
+                            <textarea id="meetingDescription" class="form-input" rows="3" 
+                                      placeholder="Help everyone prepare and feel comfortable..."></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="meetingStart">When works best?</label>
+                            <input type="datetime-local" id="meetingStart" class="form-input" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="meetingEnd">When should we wrap up?</label>
+                            <input type="datetime-local" id="meetingEnd" class="form-input" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="meetingCategory">What type of gathering?</label>
+                            <select id="meetingCategory" class="form-input" required>
+                                <option value="">Choose what fits best...</option>
+                                <option value="meeting">Team Meeting</option>
+                                <option value="standup">Quick Standup</option>
+                                <option value="review">Review Session</option>
+                                <option value="training">Learning Together</option>
+                                <option value="social">Social Connection</option>
+                                <option value="brainstorm">Creative Session</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="meetingLocation">Where should we meet?</label>
+                            <input type="text" id="meetingLocation" class="form-input" 
+                                   placeholder="Conference Room A, Zoom link, or Central Park bench">
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-heart"></i>
+                            Create Meeting
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Your Upcoming Gatherings -->
+            <div class="card animate-in">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <i class="fas fa-clock"></i>
+                        Your Upcoming Gatherings
+                    </h2>
+                    <p class="card-description">Here's what's coming up in your world</p>
+                </div>
+                <div class="card-body">
+                    <div id="meetingsList">
+                        <div class="meeting-item">
+                            <div class="meeting-time">Tomorrow at 10:00 AM</div>
+                            <div class="meeting-title">Weekly Team Sync</div>
+                            <div class="meeting-description">Let's catch up on progress and share wins from the week</div>
+                            <span class="meeting-category">Team Meeting</span>
+                        </div>
+                        
+                        <div class="meeting-item">
+                            <div class="meeting-time">Thursday at 2:30 PM</div>
+                            <div class="meeting-title">Sprint Planning</div>
+                            <div class="meeting-description">Planning our next adventure together</div>
+                            <span class="meeting-category">Planning</span>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 1.5rem;">
+                        <button class="btn btn-secondary" onclick="loadMoreMeetings()">
+                            <i class="fas fa-plus"></i>
+                            See All Gatherings
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Team Insights -->
+            <div class="card animate-in">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <i class="fas fa-chart-line"></i>
+                        Team Insights
+                    </h2>
+                    <p class="card-description">How your team connections are growing</p>
+                </div>
+                <div class="card-body">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <span class="stat-number" id="totalMeetings">25</span>
+                            <span class="stat-label">Gatherings This Month</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-number" id="avgDuration">42</span>
+                            <span class="stat-label">Avg Minutes Together</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-number" id="teamHappiness">92%</span>
+                            <span class="stat-label">Positive Vibes</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-number" id="upcomingMeetings">8</span>
+                            <span class="stat-label">Coming Up Soon</span>
+                        </div>
+                    </div>
+                    
+                    <button class="btn btn-secondary" onclick="loadDetailedAnalytics()">
+                        <i class="fas fa-heart"></i>
+                        See Team Story
+                    </button>
+                </div>
+            </div>
+
+            <!-- Find Your People -->
+            <div class="card animate-in">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <i class="fas fa-users"></i>
+                        Find Your People
+                    </h2>
+                    <p class="card-description">Connect with teammates and collaborators</p>
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label class="form-label" for="userSearch">Who would you like to connect with?</label>
+                        <input type="text" id="userSearch" class="form-input" 
+                               placeholder="Search by name, team, or what they're working on...">
+                    </div>
+                    
+                    <div id="searchResults" style="margin-top: 1rem;">
+                        <p style="color: var(--text-secondary); font-style: italic;">
+                            💡 Try searching for someone to get started
+                        </p>
+                    </div>
+                    
+                    <div style="margin-top: 1.5rem;">
+                        <button class="btn btn-secondary" onclick="showSuggestions()">
+                            <i class="fas fa-magic"></i>
+                            Show Me Suggestions
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notification Toast -->
+        <div id="notification" class="notification">
+            <div class="notification-title" id="notificationTitle">Welcome!</div>
+            <div class="notification-message" id="notificationMessage">You're now connected</div>
+            <div class="notification-time" id="notificationTime"></div>
+        </div>
+    </div>
+
+    <script>
+        // Human-centered interaction patterns
+        let socket = null;
+        let isConnected = false;
+
+        // Natural time formatting
+        function getTimeInWords(date) {
+            const now = new Date();
+            const target = new Date(date);
+            const diffMs = target - now;
+            const diffHours = Math.round(diffMs / (1000 * 60 * 60));
+            const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
+
+            if (diffHours < 1) return "Very soon";
+            if (diffHours < 24) return `In ${diffHours} hour${diffHours > 1 ? 's' : ''}`;
+            if (diffDays === 1) return "Tomorrow";
+            if (diffDays < 7) return `In ${diffDays} days`;
+            return target.toLocaleDateString();
+        }
+
+        // Warm notification system
+        function showNotification(title, message, type = 'info') {
+            const notification = document.getElementById('notification');
+            const titleEl = document.getElementById('notificationTitle');
+            const messageEl = document.getElementById('notificationMessage');
+            const timeEl = document.getElementById('notificationTime');
+
+            // Add personality to notifications
+            const emojis = {
+                success: '🎉',
+                info: '💡',
+                warning: '⚠️',
+                error: '😔'
+            };
+
+            titleEl.textContent = `${emojis[type] || '💫'} ${title}`;
+            messageEl.textContent = message;
+            timeEl.textContent = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 5000);
+        }
+
+        // Socket connection with warmth
+        function initSocket() {
+            socket = io();
+            
+            socket.on('connect', () => {
+                isConnected = true;
+                updateConnectionStatus();
+                showNotification('Connected!', 'Great to have you here. Ready to make meetings meaningful?', 'success');
+            });
+            
+            socket.on('disconnect', () => {
+                isConnected = false;
+                updateConnectionStatus();
+                showNotification('Connection lost', "Don't worry, we'll reconnect you soon", 'warning');
+            });
+            
+            socket.on('notification', (data) => {
+                showNotification(data.title, data.message, 'info');
+            });
+            
+            socket.on('meeting_created', (data) => {
+                showNotification('Meeting scheduled!', `"${data.title}" is ready to bring people together`, 'success');
+                loadMeetings();
+            });
+        }
+
+        function updateConnectionStatus() {
+            const statusEl = document.getElementById('connectionStatus');
+            const statusText = statusEl.querySelector('span');
+            
+            if (isConnected) {
+                statusText.textContent = 'Connected & ready';
+                statusEl.className = 'connection-status';
+            } else {
+                statusText.textContent = 'Reconnecting...';
+                statusEl.className = 'connection-status disconnected';
+            }
+        }
+
+        // Meeting creation with care
+        document.getElementById('meetingForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = {
+                title: document.getElementById('meetingTitle').value,
+                description: document.getElementById('meetingDescription').value,
+                startTime: document.getElementById('meetingStart').value,
+                endTime: document.getElementById('meetingEnd').value,
+                category: document.getElementById('meetingCategory').value,
+                location: document.getElementById('meetingLocation').value
+            };
+
+            // Add loading state
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-heart"></i> Creating something beautiful...';
+            submitBtn.disabled = true;
+
+            try {
+                const response = await fetch('/api/meetings', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    showNotification('Meeting created!', `"${formData.title}" is ready to connect your team`, 'success');
+                    e.target.reset();
+                    
+                    // Emit to socket for real-time updates
+                    if (socket) {
+                        socket.emit('create_meeting', formData);
+                    }
+                    
+                    // Refresh the meetings list
+                    loadMeetings();
+                } else {
+                    showNotification('Oops!', 'Something went wrong. Let\'s try that again.', 'error');
+                }
+            } catch (error) {
+                showNotification('Connection issue', 'Check your internet and try again', 'error');
+            } finally {
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }
+        });
+
+        // Load meetings with human touch
+        async function loadMeetings() {
+            try {
+                const response = await fetch('/api/meetings');
+                const result = await response.json();
+                
+                if (result.success) {
+                    displayMeetings(result.data.meetings);
+                }
+            } catch (error) {
+                showNotification('Loading issue', 'Having trouble fetching your meetings', 'warning');
+            }
+        }
+
+        function displayMeetings(meetings) {
+            const listEl = document.getElementById('meetingsList');
+            
+            if (meetings.length === 0) {
+                listEl.innerHTML = `
+                    <div style="text-align: center; padding: 2rem; color: var(--text-secondary);">
+                        <i class="fas fa-calendar-day" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                        <p>No gatherings scheduled yet.</p>
+                        <p style="font-style: italic;">Ready to bring people together?</p>
+                    </div>
+                `;
+                return;
+            }
+
+            listEl.innerHTML = meetings.map(meeting => `
+                <div class="meeting-item">
+                    <div class="meeting-time">${getTimeInWords(meeting.startTime)}</div>
+                    <div class="meeting-title">${meeting.title}</div>
+                    <div class="meeting-description">${meeting.description || 'Looking forward to connecting'}</div>
+                    <span class="meeting-category">${meeting.category}</span>
+                </div>
+            `).join('');
+        }
+
+        // Analytics with storytelling
+        async function loadAnalytics() {
+            try {
+                const response = await fetch('/api/meetings/analytics');
+                const result = await response.json();
+                
+                if (result.success) {
+                    updateAnalytics(result.data);
+                }
+            } catch (error) {
+                console.log('Analytics loading issue');
+            }
+        }
+
+        function updateAnalytics(data) {
+            document.getElementById('totalMeetings').textContent = data.totalMeetings;
+            document.getElementById('avgDuration').textContent = data.averageDuration;
+            document.getElementById('upcomingMeetings').textContent = data.upcomingMeetings;
+            
+            // Calculate team happiness (mock calculation)
+            const happiness = Math.min(95, 75 + (data.totalMeetings / 5));
+            document.getElementById('teamHappiness').textContent = Math.round(happiness) + '%';
+        }
+
+        // User search with personality
+        let searchTimeout;
+        document.getElementById('userSearch').addEventListener('input', (e) => {
+            clearTimeout(searchTimeout);
+            const query = e.target.value.trim();
+            
+            if (query.length < 2) {
+                document.getElementById('searchResults').innerHTML = `
+                    <p style="color: var(--text-secondary); font-style: italic;">
+                        💡 Try searching for someone to get started
+                    </p>
+                `;
+                return;
+            }
+            
+            searchTimeout = setTimeout(() => searchUsers(query), 300);
+        });
+
+        async function searchUsers(query) {
+            try {
+                const response = await fetch(`/api/users/search?q=${encodeURIComponent(query)}`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    displaySearchResults(result.data.users);
+                }
+            } catch (error) {
+                console.log('Search issue');
+            }
+        }
+
+        function displaySearchResults(users) {
+            const resultsEl = document.getElementById('searchResults');
+            
+            if (users.length === 0) {
+                resultsEl.innerHTML = `
+                    <p style="color: var(--text-secondary); font-style: italic;">
+                        🔍 No matches found. Try a different search term.
+                    </p>
+                `;
+                return;
+            }
+            
+            resultsEl.innerHTML = users.map(user => `
+                <div class="user-result" onclick="selectUser('${user.id}')">
+                    <div style="display: flex; align-items: center; gap: 1rem; padding: 1rem; background: var(--surface-warm); border-radius: var(--radius-md); margin-bottom: 0.5rem; cursor: pointer; transition: all 0.3s ease;">
+                        <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--primary-color); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600;">
+                            ${user.firstName[0]}${user.lastName[0]}
+                        </div>
+                        <div>
+                            <div style="font-weight: 600; color: var(--text-primary);">${user.firstName} ${user.lastName}</div>
+                            <div style="color: var(--text-secondary); font-size: 0.9rem;">${user.department} • ${user.position}</div>
+                            <div style="color: var(--text-muted); font-size: 0.8rem;">${user.email}</div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function selectUser(userId) {
+            showNotification('User selected', 'Ready to invite them to a meeting?', 'info');
+        }
+
+        // Quick actions
+        function showQuickMeeting() {
+            const titleInput = document.getElementById('meetingTitle');
+            titleInput.focus();
+            titleInput.placeholder = 'What brings you together today?';
+            showNotification('Quick meeting', 'Let\'s get this scheduled quickly!', 'info');
+        }
+
+        async function loadCalendar() {
+            try {
+                const response = await fetch('/api/meetings/calendar');
+                const result = await response.json();
+                
+                if (result.success) {
+                    showNotification('Calendar loaded', `Found ${result.data.totalEvents} upcoming events`, 'info');
+                }
+            } catch (error) {
+                showNotification('Calendar issue', 'Having trouble loading your calendar', 'warning');
+            }
+        }
+
+        function loadMoreMeetings() {
+            loadMeetings();
+            showNotification('Refreshing', 'Getting the latest gatherings...', 'info');
+        }
+
+        async function showSuggestions() {
+            try {
+                const response = await fetch('/api/users/suggestions');
+                const result = await response.json();
+                
+                if (result.success) {
+                    displaySuggestions(result.data.suggestions);
+                }
+            } catch (error) {
+                console.log('Suggestions loading issue');
+            }
+        }
+
+        function displaySuggestions(suggestions) {
+            const resultsEl = document.getElementById('searchResults');
+            
+            resultsEl.innerHTML = `
+                <h4 style="margin-bottom: 1rem; color: var(--text-primary);">💫 People you might want to connect with:</h4>
+                ${suggestions.map(user => `
+                    <div class="user-result" onclick="selectUser('${user.id}')">
+                        <div style="display: flex; align-items: center; gap: 1rem; padding: 1rem; background: var(--surface-warm); border-radius: var(--radius-md); margin-bottom: 0.5rem; cursor: pointer; transition: all 0.3s ease;">
+                            <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--primary-color); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600;">
+                                ${user.firstName[0]}${user.lastName[0]}
+                            </div>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 600; color: var(--text-primary);">${user.firstName} ${user.lastName}</div>
+                                <div style="color: var(--text-secondary); font-size: 0.9rem;">${user.department}</div>
+                                <div style="color: var(--accent-color); font-size: 0.8rem; font-style: italic;">${user.reason}</div>
+                            </div>
+                        </div>
+                    </div>
+                `).join('')}
+            `;
+        }
+
+        async function loadDetailedAnalytics() {
+            try {
+                const response = await fetch('/api/analytics/dashboard');
+                const result = await response.json();
+                
+                if (result.success) {
+                    showNotification('Team insights', 'Your team is creating amazing connections!', 'success');
+                }
+            } catch (error) {
+                console.log('Analytics loading issue');
+            }
+        }
+
+        // Initialize everything with warmth
+        document.addEventListener('DOMContentLoaded', () => {
+            initSocket();
+            
+            // Set thoughtful default times
+            const now = new Date();
+            const startTime = new Date(now.getTime() + 60 * 60 * 1000); // 1 hour from now
+            const endTime = new Date(startTime.getTime() + 30 * 60 * 1000); // 30 minutes duration
+            
+            document.getElementById('meetingStart').value = startTime.toISOString().slice(0, 16);
+            document.getElementById('meetingEnd').value = endTime.toISOString().slice(0, 16);
+            
+            // Load initial data
+            loadMeetings();
+            loadAnalytics();
+            
+            // Welcome the human
+            setTimeout(() => {
+                showNotification('Welcome to MeetUp!', 'Where every meeting is an opportunity to connect and create together', 'info');
+            }, 1000);
+        });
+
+        // Handle connectivity gracefully
+        window.addEventListener('online', () => {
+            showNotification('Back online!', 'Great to have you back. Syncing your latest changes...', 'success');
+        });
+
+        window.addEventListener('offline', () => {
+            showNotification('Working offline', 'No worries, we\'ll sync everything when you\'re back online', 'info');
+        });
+    </script>
+</body>
+</html>
